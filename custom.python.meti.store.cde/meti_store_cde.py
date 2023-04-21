@@ -125,6 +125,7 @@ class MetiStoreCde(BasePlugin):
                     break
             if C2480_CDX == False:
                 logger.info("Log file "+log_file+" is not for C2480_CDX")
+                continue
             if C2480_CDX:
                 for line in lines:
                     if "Site:" in line:
@@ -163,42 +164,45 @@ class MetiStoreCde(BasePlugin):
                         if search_result:
                             date_fin_transfert = search_result.group(1)
 
-            logger.info("Site = "+site)
-            logger.info("Application = "+application)
-            logger.info("Dossier = "+dossier)
-            logger.info("cde_file_path = "+cde_file_path)
-            logger.info("supply = "+supply)
-            logger.info("transfert_ok = "+str(transfert_ok))
-            logger.info("status_3 = "+str(status_3))
-            logger.info("date_fin_transfert = "+date_fin_transfert)
+                logger.info("Site = "+site)
+                logger.info("Application = "+application)
+                logger.info("Dossier = "+dossier)
+                logger.info("cde_file_path = "+cde_file_path)
+                logger.info("supply = "+supply)
+                logger.info("transfert_ok = "+str(transfert_ok))
+                logger.info("status_3 = "+str(status_3))
+                logger.info("date_fin_transfert = "+date_fin_transfert)
 
-            with open(cde_file_path, mode="r",encoding="cp1252") as fp:
-                lines = fp.readlines()
+                with open(cde_file_path, mode="r",encoding="cp1252") as fp:
+                    lines = fp.readlines()
 
-            E_lines_list = []
-            F_lines_list = []
-            for line in lines:
-                if line.startswith("E"):
-                    E_lines_list.append(line)
-                if line.startswith("F"):
-                    F_lines_list.append(line)
+                E_lines_list = []
+                F_lines_list = []
+                for line in lines:
+                    if line.startswith("E"):
+                        E_lines_list.append(line)
+                    if line.startswith("F"):
+                        F_lines_list.append(line)
 
-            if len(E_lines_list) != len(F_lines_list):
-                logger.error("We should have the same lenght")
-            else:
-                length = len(E_lines_list)
-                for i in range(0,length):
-                    num_magasin = E_lines_list[i][1:7]
-                    num_cde = E_lines_list[i][8:15]
-                    nb_articles = int(F_lines_list[i][1:9])
-                    print("num_magasin = "+num_magasin)
-                    print("num_cde = "+num_cde)
-                    print("nb_articles = "+str(nb_articles))
-                    commande = Commande(num_cde, nb_articles, site, application, dossier, num_magasin, supply, cde_file_path, transfert_ok, status_3, date_fin_transfert)
-                    liste_commandes.append(commande)
+                if len(E_lines_list) != len(F_lines_list):
+                    logger.error("We should have the same lenght")
+                else:
+                    length = len(E_lines_list)
+                    for i in range(0,length):
+                        num_magasin = E_lines_list[i][1:7]
+                        num_cde = E_lines_list[i][8:15]
+                        nb_articles = int(F_lines_list[i][1:9])
+                        print("num_magasin = "+num_magasin)
+                        print("num_cde = "+num_cde)
+                        print("nb_articles = "+str(nb_articles))
+                        commande = Commande(num_cde, nb_articles, site, application, dossier, num_magasin, supply, cde_file_path, transfert_ok, status_3, date_fin_transfert)
+                        liste_commandes.append(commande)
 
         if len(log_files_to_read) == 0:
             logger.info("No log file found")
+            return
+        if len(liste_commandes) == 0:
+            logger.info("No commands")
             return
         log_json = []
         for commande in liste_commandes:
