@@ -1,0 +1,73 @@
+{
+  "version": "1.0",
+  "name":"custom.python.meti.supply.dde",
+  "metricGroup": "tech.meti",
+  "type":"python",
+  "entity":"HOST",
+  "processTypeNames": ["LINUX_SYSTEM", "WINDOWS_SYSTEM"],
+  "source": {
+    "package": "meti_supply_dde",
+    "className": "MetiSupplyDde",
+    "activation": "Singleton"
+  },
+  "ui": {
+    "keycharts" : [
+    ],
+    "charts": [
+    ]
+  },
+  "properties": [
+	{
+	  "key": "application",
+		"defaultValue" : "emag",
+	  "type": "String"
+	},
+	{
+	  "key": "site",
+		"defaultValue" : "ESCSPL",
+	  "type": "String"
+	},
+	{
+	  "key": "dossier",
+		"defaultValue" : "PRPLE1",
+	  "type": "String"
+	},
+	{
+		"key": "debug",
+		"defaultValue" : false,
+		"type": "Boolean"
+	}
+  ],
+  "configUI": {
+    "displayName": "Meti Supply Integration Plugin",
+    "properties": [
+        {
+          "key" : "application",
+          "displayName": "Nom de l'application",
+          "displayOrder": 1,
+          "displayHint": "Nom de l'application dans le chemin du fichier de log /meti/[application]/log/ESCSPL/PRPLE1/"
+        },
+        {
+          "key" : "site",
+          "displayName": "Nom du site",
+          "displayOrder": 2,
+          "displayHint": "Nom du site dans le chemin du fichier de log /meti/emag/log/[site]/PRPLE1/"
+        },
+        {
+          "key" : "dossier",
+          "displayName": "Nom du dossier (magasin)",
+          "displayOrder": 3,
+          "displayHint": "Nom du dossier dans le chemin du fichier de log /meti/emag/ESCSPL/[dossier]/"
+        },
+        {
+          "key" : "debug",
+          "displayName": "Click to activate debug log",
+          "displayOrder": 4,
+          "displayHint": "true or false"
+        }
+    ]
+  },
+  "metrics":[
+  ]
+}
+
