@@ -173,8 +173,9 @@ class MetiStoreCde(BasePlugin):
                 logger.info("status_3 = "+str(status_3))
                 logger.info("date_fin_transfert = "+date_fin_transfert)
 
-                with open(cde_file_path, mode="r",encoding="cp1252") as fp:
-                    lines = fp.readlines()
+                if cde_file_path != 'N/A': 
+                    with open(cde_file_path, mode="r",encoding="cp1252") as fp:
+                        lines = fp.readlines()
 
                 E_lines_list = []
                 F_lines_list = []
