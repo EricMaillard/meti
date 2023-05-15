@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "name":"custom.python.meti.supply.dde",
   "metricGroup": "tech.meti",
   "type":"python",
@@ -55,7 +55,7 @@
         },
         {
           "key" : "dossier",
-          "displayName": "Nom du dossier (magasin)",
+          "displayName": "Nom du dossier (supply)",
           "displayOrder": 3,
           "displayHint": "Nom du dossier dans le chemin du fichier de log /meti/emag/ESCSPL/[dossier]/"
         },

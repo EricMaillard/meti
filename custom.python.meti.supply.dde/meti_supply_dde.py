@@ -28,20 +28,14 @@ class Commande:
         self.supply = supply
         self.cde_file_path = cde_file_path
         self.transfert_ok = transfert_ok
-        self.status_3 = status_3
         self.date_fin_transfert = date_fin_transfert
         self.no_traitement = no_traitement
-        if self.status_3:
+        if status_3:
             self.status = "INTEGRE_DANS_SUPPLY"
         else:
             self.status = "ERREUR_INTEGRATION_DANS_SUPPLY"
     
     def getLogEvent(self):
-        if self.cde_file_path != "N/A":
-            activite_logistique = self.cde_file_path.split('.')[1]
-        else:
-            activite_logistique = "N/A"
-
 
         logevent = { 
             "Site" : self.site,
@@ -49,7 +43,7 @@ class Commande:
             "Dossier" : self.dossier,
             "Numero_Magasin" : self.num_magasin,
             "Numero_Supply" : self.supply,
-            "Activite_logistique" : activite_logistique,
+            "Numero_Traitement" :self.no_traitement,
             "Nom_Fichier" :self.cde_file_path,
             "Numero_Commande" : self.num_cde,
             "Nombre_Articles" : self.nb_articles,
@@ -107,6 +101,7 @@ class MetiSupplyDde(BasePlugin):
             logger.info("no new log file")
         # for each log file created in last 15 minutes in the directory, we extract data
         for log_file in log_files_to_read:
+            logger.info("Read log file : "+log_file)
             with open(log_file, mode="r",encoding="cp1252") as fp:
                 lines = fp.readlines()
 
@@ -118,8 +113,6 @@ class MetiSupplyDde(BasePlugin):
             transfert_ok = False
             status_3 = False
             date_fin_transfert = "N/A"
-
-
 
             cde_files = ""
             for line in lines:
@@ -153,6 +146,7 @@ class MetiSupplyDde(BasePlugin):
                     search_result = re.search(reg, line)
                     if search_result:
                         dossier = search_result.group(1)
+                        supply = dossier
                 if "Sortie du flux" in line:
                     #print(line)
                     reg = '\[INFO\] - (.*?) : Sortie du flux'
@@ -162,20 +156,16 @@ class MetiSupplyDde(BasePlugin):
                 if "Le traitement passe en statut 3" in line:
                     status_3 = True
 
-
-                logger.info("Site = "+site)
-                logger.info("Application = "+application)
-                logger.info("Dossier = "+dossier)
-                logger.info("supply = "+supply)
-                logger.info("status_3 = "+str(status_3))
-                logger.info("date_fin_transfert = "+date_fin_transfert)
-
-
+            logger.info("Site = "+site)
+            logger.info("Application = "+application)
+            logger.info("Dossier = "+dossier)
+            logger.info("supply = "+supply)
+            logger.info("status_3 = "+str(status_3))
+            logger.info("date_fin_transfert = "+date_fin_transfert)
 
             list_dict_flux=[]
             fle_notrait = None
             cde_file_path = None
-            files_list = []
             for i in range(0, len(cde_files_nlist)):
                 for j in range(0, len(lines)):
                     dict_flux = {}
@@ -190,13 +180,12 @@ class MetiSupplyDde(BasePlugin):
                             cde_file_path = search_result.group(1)
                             #print(fle_notrait)
                         file_name = os.path.basename(cde_files_nlist[i])
-                        files_list.append(file_name)
                         dict_flux["fichier"] = file_name
                         dict_flux["flux"] = fle_notrait
                         dict_flux["cde_file_path"] = cde_file_path
                         #print(dict_flux)
                         list_dict_flux.append(dict_flux)
-            #print(list_dict_flux)
+            logger.info("list_dict_flux = "+str(list_dict_flux))
             """
             print("Site = " + site)
             print("Application = " + application)
@@ -211,6 +200,7 @@ class MetiSupplyDde(BasePlugin):
                 
                 
                 if os.path.isfile(cde_file_path):
+                    logger.info("Opening DDE file named "+cde_file_path)
                     with open(cde_file_path, mode="r",encoding="cp1252") as fp:
                         lines = fp.readlines()
 
