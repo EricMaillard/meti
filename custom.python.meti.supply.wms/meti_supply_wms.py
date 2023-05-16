@@ -151,10 +151,19 @@ class MetiSupplyWms(BasePlugin):
             no_traitement = fichier.split(".")[-1]
             nr_preparation = fichier.split("_")[0]
 
-
-            file = file_path+"/"+fichier
-            if os.path.isfile(file):
-                with open(file, mode="r",encoding="utf-8") as fp:
+            histo_file_path = file_path + os.sep + "histo"
+            logger.info("histo_file_path = "+histo_file_path)
+            file = None
+            file_list = os.listdir(histo_file_path)
+            for filename in file_list:
+                if filename.startswith(fichier):
+                    file = filename
+                    break
+            logger.info("File found in histo directory : "+file)
+            file_to_open = histo_file_path + os.sep + file
+            logger.info("Try to open file : "+file_to_open)
+            if os.path.isfile(file_to_open):
+                with open(file_to_open, mode="r",encoding="cp1252") as fp:
                     lines = fp.readlines()
 
                 num_cde = ""
@@ -167,11 +176,18 @@ class MetiSupplyWms(BasePlugin):
                             commande = Commande(num_cde, nb_articles, site, application, dossier, num_magasin, supply, fichier, transfert_ok, no_traitement, nr_preparation, date_fin_transfert)
                             liste_commandes.append(commande)
                         nb_articles = 0
-                        num_cde = line.split("|")[2]
+                        nr_preparation = None
+                        num_cde = None
                     if line.startswith("CLI"):
                         num_magasin = line.split("|")[1]
                     if line.startswith("DFA"):
+                        if nr_preparation == None:
+                            splitted = line.split("|")
+                            nr_preparation = splitted[2]
+                            num_cde = splitted[30]
                         nb_articles += 1
+            else:
+                logger.info("File "+file_to_open+" not found")
 
 
         if len(log_files_to_read) == 0:
